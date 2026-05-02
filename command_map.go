@@ -1,30 +1,40 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"pokedexcli/internal/pokeapi"
 )
 
-func commandMap(c *config) error {
-	resp, err := pokeapi.GetLocationData(c.Next)
+func commandMapf(cfg *config) error {
+	locationsResp, err := cfg.pokeApiClient.ListLocations(cfg.nextLocationsUrl)
 	if err != nil {
-		return fmt.Errorf("Error: %w", err)
+		return err
 	}
 
-	c.Next = resp.Next
-	if resp.Previous == nil {
-		c.Previous = ""
-	} else {
-		c.Previous = *resp.Previous
-	}
+	cfg.nextLocationsUrl = locationsResp.Next
+	cfg.previousLocationsUrl = locationsResp.Previous
 
-	if len(resp.Locations) == 0 {
-		return fmt.Errorf("No locations returned")
-	}
-
-	for _, location := range resp.Locations {
+	for _, location := range locationsResp.Results {
 		fmt.Printf("%v\n", location.Name)
 	}
+	return nil
+}
 
+func commandMapb(cfg *config) error {
+	if cfg.previousLocationsUrl == nil {
+		return errors.New("you're on the first page")
+	}
+
+	locationsResp, err := cfg.pokeApiClient.ListLocations(cfg.previousLocationsUrl)
+	if err != nil {
+		return err
+	}
+
+	cfg.nextLocationsUrl = locationsResp.Next
+	cfg.previousLocationsUrl = locationsResp.Previous
+
+	for _, location := range locationsResp.Results {
+		fmt.Printf("%v\n", location.Name)
+	}
 	return nil
 }
