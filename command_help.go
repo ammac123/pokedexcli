@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func commandHelp(c *config) error {
+func commandHelp(c *config, args ...string) error {
 	var b strings.Builder
 	fmt.Fprintf(&b, `
 Welcome to the Pokedex!

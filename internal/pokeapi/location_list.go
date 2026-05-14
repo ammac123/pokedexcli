@@ -2,37 +2,44 @@ package pokeapi
 
 import (
 	"encoding/json"
-	"io"
-	"net/http"
 )
 
-func (c *Client) ListLocations(pageURL *string) (RespAreaLocations, error) {
+func (c *Client) ListLocations(pageURL *string) (RespLocations, error) {
 	url := baseURL + "/location-area"
 	if pageURL != nil {
 		url = *pageURL
 	}
 
-	req, err := http.NewRequest("GET", url, nil)
+	data, err := c.GetData(url)
+
 	if err != nil {
-		return RespAreaLocations{}, err
+		return RespLocations{}, nil
 	}
 
-	res, err := c.httpClient.Do(req)
-	if err != nil {
-		return RespAreaLocations{}, err
-	}
-	defer res.Body.Close()
-
-	data, err := io.ReadAll(res.Body)
-	if err != nil {
-		return RespAreaLocations{}, err
-	}
-
-	locationsResp := RespAreaLocations{}
+	locationsResp := RespLocations{}
 	err = json.Unmarshal(data, &locationsResp)
 	if err != nil {
-		return RespAreaLocations{}, err
+		return RespLocations{}, err
 	}
 
 	return locationsResp, nil
+}
+
+func (c *Client) GetLocationInfo(locationNameId string) (RespLocationInfo, error) {
+	url := baseURL + "/location-area/" + locationNameId
+
+	data, err := c.GetData(url)
+
+	if err != nil {
+		return RespLocationInfo{}, err
+	}
+
+	locationInfoResp := RespLocationInfo{}
+	err = json.Unmarshal(data, &locationInfoResp)
+	if err != nil {
+		return RespLocationInfo{}, err
+	}
+
+	return locationInfoResp, nil
+
 }

@@ -1,11 +1,10 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 )
 
-func commandMapf(cfg *config) error {
+func commandMapf(cfg *config, args ...string) error {
 	locationsResp, err := cfg.pokeApiClient.ListLocations(cfg.nextLocationsUrl)
 	if err != nil {
 		return err
@@ -20,9 +19,9 @@ func commandMapf(cfg *config) error {
 	return nil
 }
 
-func commandMapb(cfg *config) error {
+func commandMapb(cfg *config, args ...string) error {
 	if cfg.previousLocationsUrl == nil {
-		return errors.New("you're on the first page")
+		return fmt.Errorf("you're on the first page")
 	}
 
 	locationsResp, err := cfg.pokeApiClient.ListLocations(cfg.previousLocationsUrl)
