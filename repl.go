@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"pokedexcli/internal/pokeapi"
+	"pokedexcli/internal/pokedex"
 	"strings"
 )
 
@@ -12,6 +13,7 @@ type config struct {
 	pokeApiClient        pokeapi.Client
 	nextLocationsUrl     *string
 	previousLocationsUrl *string
+	pokedex              pokedex.Pokedex
 }
 
 func startRepl(cfg *config) {
@@ -79,6 +81,21 @@ func getCommands() map[string]cliCommand {
 			name:        "explore [location]",
 			description: "Get the pokemon found in the location",
 			callback:    commandExplore,
+		},
+		"catch": {
+			name:        "catch [pokemon]",
+			description: "Try to catch the pokemon",
+			callback:    commandCatch,
+		},
+		"inspect": {
+			name:        "inspect [pokemon]",
+			description: "Inspect details of caught pokemon",
+			callback:    commandInspect,
+		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "Show pokemon in your Pokedex",
+			callback:    commandPokedex,
 		},
 		"exit": {
 			name:        "exit",
